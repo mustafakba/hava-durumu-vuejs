@@ -11,7 +11,12 @@ const store = new Vuex.Store({
         data :'',
         cityName:'',
         temp :'',
-        newTemp : ''
+        newTemp : '',
+        feels_like :'',
+        new_feels_like :'',
+        weather :'',
+        coord_lon :'',
+        coord_lan :''
     },
     getters:{
 
@@ -21,15 +26,25 @@ const store = new Vuex.Store({
     },
     actions:{
         getRequest({state}){
-
-            axios.get("https://api.openweathermap.org/data/2.5/weather?q=istanbul,turkiye&appid=0eb69af3ffadfd2a436f6cfb5bf10e75").then((response) => {
+            if(state.cityName == ""){
+                state.cityName = "istanbul"
+            }
+            axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${state.cityName},turkiye&appid=0eb69af3ffadfd2a436f6cfb5bf10e75`)
+                .then((response) => {
                 state.data = response.data
-                // console.log(state.data)
+                state.coord_lon = response.data.coord.lon
+                state.coord_lat = response.data.coord.lat
                 state.cityName = response.data.name
-                console.log(response.data.main.temp)
                 state.temp = response.data.main.temp
-                state.newTemp = parseInt(state.temp- 270 )
-                console.log(state.newTemp)
+                state.newTemp = parseInt(state.temp - 270 )
+                state.feels_like = response.data.main.feels_like
+                state.new_feels_like = parseInt(state.feels_like - 270 )
+
+                if(state.new_feels_like > 15){
+                    console.log('hava baya sıcak')
+                }
+                console.log(state.data.weather[0].description)
+
             })
         }
     }
